@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Create your own Jsfiddle</title>
+	<meta name="author" content="Nadia HAMDAOUI" />   
+    <link rel="stylesheet" href="CodeMirror/show-hint.css">
+	<link rel="stylesheet" href="CodeMirror/codemirror.css">
+	<script src="CodeMirror/codemirror.js"></script>
+	<script src="CodeMirror/show-hint.js"></script>
+    <script src="CodeMirror/closetag.js"></script>
+    <script src="CodeMirror/html-hint.js"></script>
+    <script src="CodeMirror/xml.js"></script>
+    <script src="CodeMirror/css.js"></script>
+	<script src="CodeMirror/javascript.js"></script>
+    <script src="CodeMirror/htmlmixed.js"></script>
+    
+
+    <style type="text/css">
+      .CodeMirror {
+       
+        border: 1px solid black;
+      }
+      iframe {
+       width:100%;
+        float: left;
+        height: 300px;
+        border: 1px solid black;
+        border-left: 0px;
+      }
+	#workspace
+	{
+		width:100%;
+	}
+	#workspace td{
+	width:50%;
+	}
+	.boxLabel{
+	border: 1px solid black;
+    color: black;
+    font-size: 10px;
+    padding: 0 3px;
+    position: absolute;
+    
+	}
+    </style>
+  </head>
+  <body>
+    <h1>Create your own Jsfiddle using CodeMirror Library</h1>
+	<button id="update">Run</button>
+	<button id="reset">Reset</button>
+	<table id="workspace">
+	<tr>
+	<td> <textarea id="html" name="html"></textarea><div class="boxLabel" style="left: 47%;top: 23%">HTML</div></td>
+	<td><textarea id="css"></textarea><div class="boxLabel" style="left: 97%;top: 23%">CSS</div></td>
+	
+	</tr>
+	<tr>
+	<td><textarea id="javascript"></textarea><div class="boxLabel" style="left: 46%;top: 86%">Javascript</div></td>
+   <td><iframe id="preview"></iframe><div class="boxLabel" style="left: 96%;top: 86%">Preview</div></td>
+   </tr>
+   </table>
+    <script>
+   var previewFrame = document.getElementById('preview');
+        CodeMirror.commands.autocomplete = function(cm) {
+          CodeMirror.showHint(cm, CodeMirror.htmlHint);
+      }
+	 
+	  var editor = CodeMirror.fromTextArea(document.getElementById('html'), {
+        mode: 'text/html',
+       autoCloseTags: true,
+        extraKeys: {"Ctrl-Space": "autocomplete"}
+      });
+       var csseditor = CodeMirror.fromTextArea(document.getElementById("css"), {
+	   mode: 'text/css',
+        tabMode: 'indent'
+	   });
+      var jseditor = CodeMirror.fromTextArea(document.getElementById("javascript"), {
+	  mode: "text/typescript",
+        tabMode: 'indent'
+	   });
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        preview.open();
+        preview.write(editor.getValue());
+		
+        preview.close();
+      }
+  
+	   document.getElementById('update').onclick=function(){
+	
+		updatePreview();
+		
+		var style=previewFrame.contentWindow.document.createElement("style");
+		style.type = "text/css";
+		style.innerHTML += csseditor.getValue();
+		previewFrame.contentWindow.document.head.appendChild(style);
+
+		var script = previewFrame.contentWindow.document.createElement("script");
+		script.type = "text/javascript";
+		script.innerHTML += jseditor.getValue();
+		previewFrame.contentWindow.document.body.appendChild(script);
+	  
+	  };
+	  
+	   document.getElementById('reset').onclick=function(){
+		   editor.setValue("");
+		   csseditor.setValue("");
+		   jseditor.setValue("");	
+		   previewFrame.contentWindow.document.head.innerHTML ='';
+		   previewFrame.contentWindow.document.body.innerHTML ='';
+			
+	   };
+
+    </script>
+  </body>
+</html>
